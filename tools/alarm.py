@@ -157,7 +157,7 @@ class AlarmManager:
 
 # 创建 FastMCP 应用
 # mcp = FastMCP("Alarm Server")
-def register_amap_tools(mcp: FastMCP):
+def register_alarm_tools(mcp: FastMCP):
     alarm_manager = AlarmManager(mcp)
 
     @mcp.tool()
