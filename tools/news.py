@@ -7,14 +7,30 @@ from markitdown import MarkItDown
 
 logger = logging.getLogger('news_tools')
 
-WEB_WEBPILOT_APIKEY = os.environ.get("WEB_WEBPILOT_APIKEY")
-API_URL = "https://gpts.webpilot.ai/api/read"
-
 # 新闻来源字典，包含名称和对应的API ID
 NEWS_SOURCES = {
     "thepaper": "澎湃新闻",
-    "baidu": "百度热搜",
-    "cls-depth": "财联社",
+    "zhihu": "知乎",
+    "weibo": "微博热搜",
+    "wallstreetcn-hot": "华尔街新闻-最热",
+    "douyin": "抖音热搜",
+    "hupu": "虎扑",
+    "tieba": "百度贴吧",
+    "toutiao": "今日头条",
+    "cls-hot": "财联社",
+    "xueqiu-hotstock": "雪球",
+    "bilibili-hot-search": "哔哩哔哩热搜",
+    "ifeng": "凤凰新闻",
+    "juejin": "掘金",
+    "nowcoder": "牛客网",
+    "sspai": "少数派",
+    "zaobao": "早报-实时",
+    "wallstreetcn-quick": "华尔街新闻-快讯",
+    "ithome": "IT之家-实时",
+    "cls-telegraph": "财联社-电报-实时",
+    "cls-depth": "财联社-深度",
+    "fastbull-express": "法布财经-实时",
+    "jin10": "金十数据-实时",
 }
 
 # 动态生成新闻源描述
