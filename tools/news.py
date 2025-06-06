@@ -2,6 +2,7 @@ import logging
 import requests
 import os
 import random
+import sys
 from mcp.server.fastmcp import FastMCP
 from markitdown import MarkItDown
 
@@ -42,23 +43,37 @@ def generate_news_sources_description():
 
 def register_news_tools(mcp: FastMCP):
     @mcp.tool()
+    def get_news_sources() -> dict:
+        """获取新闻源列表
+        
+        Returns:
+            dict: 包含成功状态、新闻源列表, 新闻源列表包含名称和对应的API ID
+        """
+        return {
+            "success": True,
+            "result": NEWS_SOURCES
+        }
+    
+    @mcp.tool()
     def fetch_news_from_api(source: str = "thepaper") -> dict:
         """获取今天的最新新闻，可以指定新闻源，如果没有指定，默认从澎湃新闻获取。
         
         Args:
-            source (str): 新闻源名称，可选值为：{generate_news_sources_description()}
+            source (str): 新闻源名称，可选值为：thepaper、zhihu、weibo、wallstreetcn-hot、douyin、hupu、tieba、toutiao、cls-hot、xueqiu-hotstock、bilibili-hot-search、ifeng、juejin、nowcoder、sspai、zaobao、wallstreetcn-quick、ithome、cls-telegraph、cls-depth、fastbull-express、jin10
             
         Returns:
             dict: 包含成功状态、新闻列表
         """
         try:
+            logger.info(f"调用fetch_news_from_api工具: {source}")
             api_url = f"https://newsnow.busiyi.world/api/s?id={source}"
             response = requests.get(api_url, timeout=10)
             response.raise_for_status()
-
+            # logger.info(f"获取新闻API响应: {response.text}")
             data = response.json()
-
+            logger.info(f"获取新闻API响应: {data}")
             if "items" in data:
+                logger.info(f"获取新闻API响应: {data['items']}")
                 return {
                     "success": True,
                     "result": data["items"]
@@ -86,6 +101,7 @@ def register_news_tools(mcp: FastMCP):
             dict: 包含成功状态、清理后的新闻内容
         """
         try:
+            logger.info(f"调用fetch_news_detail工具: {url}")
             response = requests.get(url, timeout=10)
             response.raise_for_status()
 
@@ -111,12 +127,12 @@ def register_news_tools(mcp: FastMCP):
             return {"success": False, "error": str(e)}
         
     @mcp.tool()
-    def get_news_from_newsnow(source: str = "thepaper", detail: bool = False, lang: str = "zh_CN"
+    def get_random_news(source: str = "thepaper", detail: bool = False, lang: str = "zh_CN"
     ) -> dict:
         """随机获取一条新闻进行播报，如果没有指定，默认从澎湃新闻获取。用户可以要求获取详细内容，此时会获取新闻的详细内容。
 
         Args:
-            source (str): 新闻源名称，可选值为：{generate_news_sources_description()}
+            source (str): 新闻源名称，可选值为：thepaper、zhihu、weibo、wallstreetcn-hot、douyin、hupu、tieba、toutiao、cls-hot、xueqiu-hotstock、bilibili-hot-search、ifeng、juejin、nowcoder、sspai、zaobao、wallstreetcn-quick、ithome、cls-telegraph、cls-depth、fastbull-express、jin10
             detail (bool): 是否获取新闻详情
             lang (str): 语言，可选值为：zh_CN、en_US
         
@@ -124,6 +140,7 @@ def register_news_tools(mcp: FastMCP):
             dict: 包含成功状态、新闻报告
         """
         try:
+            logger.info("调用get_random_news工具")
             # 否则，获取新闻列表并随机选择一条
             # 验证新闻源是否有效，如果无效则使用默认源
             if source not in NEWS_SOURCES:
@@ -135,24 +152,27 @@ def register_news_tools(mcp: FastMCP):
 
             # 获取新闻列表
             news_items = fetch_news_from_api( source)
-            if not news_items:
+            if not news_items['result']:
                 return {
                     "success": False,
                     "error": f"抱歉，未能从{source_name}获取到新闻信息，请稍后再试或尝试其他新闻源。"
                 }
 
             # 随机选择一条新闻
-            selected_news = random.choice(news_items)
-
-            # 构建新闻报告
-            news_report = (
-                f"根据下列数据，用{lang}回应用户的新闻查询请求：\n\n"
-                f"新闻标题: {selected_news['title']}\n"
-                f"新闻链接: {selected_news['url']}\n"
-                # f"新闻来源: {source_name}\n"
-                f"(请以自然、流畅的方式向用户播报这条新闻标题，"
-                f"提示用户可以要求获取详细内容，此时调用获取新闻的详细内容工具（fetch_news_detail）获取新闻的详细内容。)"
-            )
+            selected_news = random.choice(news_items['result'])
+            if detail:
+                selected_news = fetch_news_detail(selected_news['url'])
+                news_report = selected_news['result']
+            else:
+                # 构建新闻报告
+                news_report = (
+                    f"根据下列数据，用{lang}回应用户的新闻查询请求：\n\n"
+                    f"新闻标题: {selected_news['title']}\n"
+                    f"新闻链接: {selected_news['url']}\n"
+                    # f"新闻来源: {source_name}\n"
+                    f"(请以自然、流畅的方式向用户播报这条新闻标题，"
+                    f"提示用户可以要求获取详细内容，此时调用获取新闻的详细内容工具（fetch_news_detail）获取新闻的详细内容。)"
+                )
 
             return {
                 "success": True,

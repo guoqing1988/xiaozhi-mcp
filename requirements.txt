@@ -6,3 +6,4 @@ requests
 psutil
 mcp-proxy
 markitdown
+python-socks
