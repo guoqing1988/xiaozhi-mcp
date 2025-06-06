@@ -12,7 +12,7 @@ def register_web_tools(mcp: FastMCP):
     @mcp.tool()
     def web_search(query: str) -> dict:
         """
-        搜索工具。
+        网络搜索工具。用户可以通过这个工具进行网络搜索，获取搜索结果。
         参数:
         - query: 搜索内容
         返回:
@@ -62,7 +62,7 @@ def register_web_tools(mcp: FastMCP):
                 "result": str(e)
             }
 
-    @mcp.tool()
+    # @mcp.tool()
     def read_webpage(url: str, keyword: str = "", language: str = "zh-CN") -> dict:
         """
         读取并分析网页内容。
