@@ -43,7 +43,7 @@ def generate_news_sources_description():
 def register_news_tools(mcp: FastMCP):
     @mcp.tool()
     def fetch_news_from_api(source: str = "thepaper") -> dict:
-        """获取今天的新闻，可以指定新闻源，如果没有指定，默认从澎湃新闻获取。
+        """获取今天的最新新闻，可以指定新闻源，如果没有指定，默认从澎湃新闻获取。
         
         Args:
             source (str): 新闻源名称，可选值为：{generate_news_sources_description()}
@@ -113,7 +113,7 @@ def register_news_tools(mcp: FastMCP):
     @mcp.tool()
     def get_news_from_newsnow(source: str = "thepaper", detail: bool = False, lang: str = "zh_CN"
     ) -> dict:
-        """获取新闻并随机选择一条进行播报，如果没有指定，默认从澎湃新闻获取。用户可以要求获取详细内容，此时会获取新闻的详细内容。
+        """随机获取一条新闻进行播报，如果没有指定，默认从澎湃新闻获取。用户可以要求获取详细内容，此时会获取新闻的详细内容。
 
         Args:
             source (str): 新闻源名称，可选值为：{generate_news_sources_description()}
